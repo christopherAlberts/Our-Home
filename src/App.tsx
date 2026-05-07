@@ -6,6 +6,8 @@ import Tracking from './components/Tracking';
 import CalendarView from './components/CalendarView';
 import Analytics from './components/Analytics';
 import HomeManual from './components/HomeManual';
+import Notifications from './components/Notifications';
+import Settings from './components/Settings';
 
 function App() {
   const [activeView, setActiveView] = useState('dashboard');
@@ -24,6 +26,10 @@ function App() {
         return <Analytics />;
       case 'manual':
         return <HomeManual />;
+      case 'notifications':
+        return <Notifications />;
+      case 'settings':
+        return <Settings />;
       default:
         return <Dashboard setActiveView={setActiveView} />;
     }

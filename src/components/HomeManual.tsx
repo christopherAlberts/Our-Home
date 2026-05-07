@@ -71,7 +71,10 @@ const HomeManual: React.FC = () => {
                   <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{item.label}</div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-slate-700">{item.value}</span>
-                    <button className="text-slate-300 group-hover:text-indigo-500 transition-colors">
+                    <button
+                      onClick={() => alert(`External Link for ${item.label} clicked!`)}
+                      className="text-slate-300 group-hover:text-indigo-500 transition-all active:scale-90"
+                    >
                       <ExternalLink size={14} />
                     </button>
                   </div>
@@ -90,7 +93,10 @@ const HomeManual: React.FC = () => {
           <h4 className="text-lg font-bold text-indigo-900 mb-1">Need more details?</h4>
           <p className="text-indigo-700 text-sm">All physical manuals for appliances are kept in the kitchen drawer under the coffee machine.</p>
         </div>
-        <button className="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl shadow-sm hover:shadow-md transition-all">
+        <button
+          onClick={() => alert('Browse Docs clicked!')}
+          className="px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95"
+        >
           Browse Docs
         </button>
       </div>

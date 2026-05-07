@@ -67,7 +67,10 @@ const CalendarView: React.FC = () => {
               <ChevronRight size={20} />
             </button>
           </div>
-          <button className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors">
+          <button
+            onClick={() => alert('Add Event clicked!')}
+            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors active:scale-95 transition-transform"
+          >
             <Plus size={18} />
             Add Event
           </button>
@@ -139,7 +142,12 @@ const CalendarView: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-[10px] font-bold">URGENT</span>
-              <button className="p-2 text-slate-400 hover:text-slate-600"><AlertCircle size={18} /></button>
+              <button
+                onClick={() => alert('Alert details clicked!')}
+                className="p-2 text-slate-400 hover:text-slate-600 active:scale-90 transition-transform"
+              >
+                <AlertCircle size={18} />
+              </button>
             </div>
           </div>
         </div>

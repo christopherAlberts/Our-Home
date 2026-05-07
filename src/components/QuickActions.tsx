@@ -6,12 +6,12 @@ import {
   CreditCard
 } from 'lucide-react';
 
-const QuickActions: React.FC = () => {
+const QuickActions: React.FC<{ setActiveView: (view: string) => void }> = ({ setActiveView }) => {
   const actions = [
-    { label: 'Pay Utility', icon: CreditCard, color: 'bg-indigo-50 text-indigo-600' },
-    { label: 'Refill Gas', icon: Flame, color: 'bg-orange-50 text-orange-600' },
-    { label: 'Dog Meds', icon: Dog, color: 'bg-amber-50 text-amber-600' },
-    { label: 'New Task', icon: Plus, color: 'bg-slate-50 text-slate-600' },
+    { label: 'Pay Utility', icon: CreditCard, color: 'bg-indigo-50 text-indigo-600', view: 'monthly' },
+    { label: 'Refill Gas', icon: Flame, color: 'bg-orange-50 text-orange-600', view: 'tracking' },
+    { label: 'Dog Meds', icon: Dog, color: 'bg-amber-50 text-amber-600', view: 'tracking' },
+    { label: 'New Task', icon: Plus, color: 'bg-slate-50 text-slate-600', view: 'calendar' },
   ];
 
   return (
@@ -19,7 +19,8 @@ const QuickActions: React.FC = () => {
       {actions.map((action) => (
         <button
           key={action.label}
-          className="flex flex-col items-center gap-3 p-4 bg-white rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all group"
+          onClick={() => setActiveView(action.view)}
+          className="flex flex-col items-center gap-3 p-4 bg-white rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all active:scale-95 group"
         >
           <div className={`p-3 rounded-xl ${action.color} group-hover:scale-110 transition-transform`}>
             <action.icon size={24} />

@@ -26,7 +26,7 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
         </div>
       </div>
 
-      <QuickActions />
+      <QuickActions setActiveView={setActiveView} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Feed */}
@@ -52,8 +52,18 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
                   </div>
                   <p className="text-sm text-slate-500 mb-3">Bottle 1 is at approximately 15%. Consider ordering a refill soon.</p>
                   <div className="flex items-center gap-4">
-                    <button className="text-xs font-bold text-indigo-600 hover:underline">Order Refill</button>
-                    <button className="text-xs font-bold text-slate-400 hover:underline">Dismiss</button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); alert('Order Refill clicked!'); }}
+                      className="text-xs font-bold text-indigo-600 hover:underline active:scale-95 transition-transform"
+                    >
+                      Order Refill
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); alert('Dismiss clicked!'); }}
+                      className="text-xs font-bold text-slate-400 hover:underline active:scale-95 transition-transform"
+                    >
+                      Dismiss
+                    </button>
                   </div>
                 </div>
               </div>
@@ -92,7 +102,7 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
                 </div>
                 <button
                   onClick={() => setActiveView('monthly')}
-                  className="w-full mt-2 flex items-center justify-center gap-2 py-2 text-xs font-bold text-slate-600 border border-slate-100 rounded-xl hover:bg-slate-50"
+                  className="w-full mt-2 flex items-center justify-center gap-2 py-2 text-xs font-bold text-slate-600 border border-slate-100 rounded-xl hover:bg-slate-50 active:scale-95 transition-transform"
                 >
                   View All Payments <ArrowRight size={14} />
                 </button>
@@ -114,7 +124,7 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
                 </div>
                 <button
                   onClick={() => setActiveView('analytics')}
-                  className="w-full mt-2 flex items-center justify-center gap-2 py-2 text-xs font-bold text-slate-600 border border-slate-100 rounded-xl hover:bg-slate-50"
+                  className="w-full mt-2 flex items-center justify-center gap-2 py-2 text-xs font-bold text-slate-600 border border-slate-100 rounded-xl hover:bg-slate-50 active:scale-95 transition-transform"
                 >
                   View Analytics <ArrowRight size={14} />
                 </button>
@@ -147,7 +157,7 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
             </div>
             <button
               onClick={() => setActiveView('calendar')}
-              className="w-full mt-8 py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-colors"
+              className="w-full mt-8 py-3 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-colors active:scale-[0.98] transition-transform"
             >
               Open Calendar
             </button>
@@ -158,7 +168,10 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
             <p className="text-indigo-100 text-xs mb-4 relative z-10 leading-relaxed">
               Based on historical data, your electricity usage peaks between 6PM and 9PM. Try shifting the pool pump to morning hours.
             </p>
-            <button className="text-white text-xs font-bold flex items-center gap-1 relative z-10 hover:underline">
+            <button
+              onClick={() => alert('Smart Tips: Learn more clicked!')}
+              className="text-white text-xs font-bold flex items-center gap-1 relative z-10 hover:underline active:scale-95 transition-transform"
+            >
               Learn more <ArrowRight size={12} />
             </button>
             <TrendingUp size={120} className="absolute -right-8 -bottom-8 text-indigo-500 opacity-20 transform -rotate-12 group-hover:rotate-0 transition-transform duration-500" />
