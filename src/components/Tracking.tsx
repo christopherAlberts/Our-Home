@@ -28,7 +28,12 @@ const Tracking: React.FC = () => {
               </h2>
               <p className="text-sm text-slate-500">Managing two bottles in rotation</p>
             </div>
-            <button className="text-indigo-600 text-sm font-semibold hover:underline">View History</button>
+            <button
+              onClick={() => alert('View History clicked!')}
+              className="text-indigo-600 text-sm font-semibold hover:underline active:scale-95 transition-transform"
+            >
+              View History
+            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -69,7 +74,10 @@ const Tracking: React.FC = () => {
                     </div>
                   </div>
 
-                  <button className="w-full mt-6 flex items-center justify-center gap-2 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl transition-colors text-sm font-semibold border border-slate-200">
+                  <button
+                    onClick={() => alert(`Mark Bottle ${bottle.bottleNumber} as Replaced clicked!`)}
+                    className="w-full mt-6 flex items-center justify-center gap-2 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl transition-all text-sm font-semibold border border-slate-200 active:scale-95"
+                  >
                     <RefreshCw size={16} />
                     Mark as Replaced
                   </button>
@@ -87,9 +95,14 @@ const Tracking: React.FC = () => {
                 <Dog className="text-amber-600" size={24} />
                 Dog Medication
               </h2>
-              <p className="text-sm text-slate-500">Flee and tick protection</p>
+              <p className="text-sm text-slate-500">Flea and tick protection</p>
             </div>
-            <button className="text-indigo-600 text-sm font-semibold hover:underline">Log History</button>
+            <button
+              onClick={() => alert('Log History clicked!')}
+              className="text-indigo-600 text-sm font-semibold hover:underline active:scale-95 transition-transform"
+            >
+              Log History
+            </button>
           </div>
 
           <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
@@ -124,7 +137,10 @@ const Tracking: React.FC = () => {
                 <div className="relative z-10">
                   <h4 className="font-bold text-lg mb-1">Time for a new dose?</h4>
                   <p className="text-indigo-100 text-sm mb-4">Keeping our furry friend healthy is the top priority.</p>
-                  <button className="w-full bg-white text-indigo-600 font-bold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-sm">
+                  <button
+                    onClick={() => alert('Dog Meds: Administered clicked!')}
+                    className="w-full bg-white text-indigo-600 font-bold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-transform"
+                  >
                     <CheckCircle2 size={18} />
                     I've Administered It
                   </button>

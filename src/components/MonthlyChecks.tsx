@@ -78,7 +78,10 @@ const MonthlyChecks: React.FC = () => {
             <h2 className="text-xl font-bold text-slate-900">Payment Checklist</h2>
             <p className="text-sm text-slate-500">Track and manage your monthly house expenses</p>
           </div>
-          <button className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">
+          <button
+            onClick={() => alert('Add Expense clicked!')}
+            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 active:scale-95 transition-transform"
+          >
             <Plus size={18} />
             Add Expense
           </button>
@@ -115,7 +118,10 @@ const MonthlyChecks: React.FC = () => {
                       {payment?.paid ? 'PAID' : 'PENDING'}
                     </div>
                   </div>
-                  <button className="p-2 text-slate-300 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => alert(`Remove/Edit ${category} clicked!`)}
+                    className="p-2 text-slate-300 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-all active:scale-90"
+                  >
                     <Plus className="rotate-45" size={20} />
                   </button>
                 </div>
