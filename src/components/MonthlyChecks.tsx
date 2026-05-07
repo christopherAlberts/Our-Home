@@ -5,23 +5,38 @@ import {
   DollarSign,
   TrendingUp,
   Calendar as CalendarIcon,
-  Plus
+  Plus,
+  X,
+  Trash2
 } from 'lucide-react';
-import { mockPayments } from '../services/data';
+import { useAppContext } from '../context/useAppContext';
 import type { PaymentCategory } from '../types';
 import { format } from 'date-fns';
 
 const MonthlyChecks: React.FC = () => {
-  const [payments, setPayments] = useState(mockPayments);
+  const { payments, togglePaymentPaid, addPayment, removePayment, currency } = useAppContext();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newExpense, setNewExpense] = useState({ category: '', amount: '' });
+
   const currentMonth = format(new Date(), 'MMMM yyyy');
 
-  const togglePaid = (id: string) => {
-    setPayments(payments.map(p =>
-      p.id === id ? { ...p, paid: !p.paid } : p
-    ));
+  const handleAddExpense = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newExpense.category && newExpense.amount) {
+      addPayment({
+        category: newExpense.category,
+        amount: parseFloat(newExpense.amount),
+        date: format(new Date(), 'yyyy-MM-dd')
+      });
+      setNewExpense({ category: '', amount: '' });
+      setIsModalOpen(false);
+    }
   };
 
-  const categories: PaymentCategory[] = ['House', 'Insurance', 'Electricity', 'Water', 'Manfred', 'Elrita'];
+  const categories: PaymentCategory[] = Array.from(new Set([
+    'House', 'Insurance', 'Electricity', 'Water', 'Manfred', 'Elrita',
+    ...payments.map(p => p.category)
+  ]));
 
   const totalAmount = payments
     .filter(p => format(new Date(p.date), 'MMMM yyyy') === currentMonth)
@@ -42,7 +57,7 @@ const MonthlyChecks: React.FC = () => {
             </div>
             <span className="text-xs font-semibold text-slate-400 uppercase">Total Due</span>
           </div>
-          <div className="text-2xl font-bold text-slate-900">${totalAmount.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-slate-900">{currency}{totalAmount.toLocaleString()}</div>
           <div className="text-sm text-slate-500 mt-1">For {currentMonth}</div>
         </div>
 
@@ -53,7 +68,7 @@ const MonthlyChecks: React.FC = () => {
             </div>
             <span className="text-xs font-semibold text-slate-400 uppercase">Paid</span>
           </div>
-          <div className="text-2xl font-bold text-slate-900">${paidAmount.toLocaleString()}</div>
+          <div className="text-2xl font-bold text-slate-900">{currency}{paidAmount.toLocaleString()}</div>
           <div className="text-sm text-emerald-600 mt-1 font-medium">
             {Math.round((paidAmount / totalAmount) * 100)}% Completed
           </div>
@@ -66,7 +81,7 @@ const MonthlyChecks: React.FC = () => {
             </div>
             <span className="text-xs font-semibold text-slate-400 uppercase">Remaining</span>
           </div>
-          <div className="text-2xl font-bold text-slate-900">${(totalAmount - paidAmount).toLocaleString()}</div>
+          <div className="text-2xl font-bold text-slate-900">{currency}{(totalAmount - paidAmount).toLocaleString()}</div>
           <div className="text-sm text-slate-500 mt-1">Pending payments</div>
         </div>
       </div>
@@ -79,7 +94,7 @@ const MonthlyChecks: React.FC = () => {
             <p className="text-sm text-slate-500">Track and manage your monthly house expenses</p>
           </div>
           <button
-            onClick={() => alert('Add Expense clicked!')}
+            onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200 active:scale-95 transition-transform"
           >
             <Plus size={18} />
@@ -98,7 +113,7 @@ const MonthlyChecks: React.FC = () => {
               <div key={category} className="p-6 flex items-center justify-between hover:bg-slate-50/50 transition-colors group">
                 <div className="flex items-center gap-4">
                   <button
-                    onClick={() => payment && togglePaid(payment.id)}
+                    onClick={() => payment && togglePaymentPaid(payment.id)}
                     className={`transition-colors ${payment?.paid ? 'text-indigo-600' : 'text-slate-300 hover:text-slate-400'}`}
                   >
                     {payment?.paid ? <CheckCircle2 size={28} /> : <Circle size={28} />}
@@ -113,23 +128,69 @@ const MonthlyChecks: React.FC = () => {
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right">
-                    <div className="font-bold text-slate-900">${payment?.amount || 0}</div>
+                    <div className="font-bold text-slate-900">{currency}{payment?.amount || 0}</div>
                     <div className={`text-xs font-semibold px-2 py-0.5 rounded-full ${payment?.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
                       {payment?.paid ? 'PAID' : 'PENDING'}
                     </div>
                   </div>
-                  <button
-                    onClick={() => alert(`Remove/Edit ${category} clicked!`)}
-                    className="p-2 text-slate-300 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-all active:scale-90"
-                  >
-                    <Plus className="rotate-45" size={20} />
-                  </button>
+                  {payment && (
+                    <button
+                      onClick={() => removePayment(payment.id)}
+                      className="p-2 text-slate-300 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all active:scale-90"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
       </div>
+
+      {/* Add Expense Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h3 className="font-bold text-slate-900 text-lg">Add New Expense</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleAddExpense} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Category</label>
+                <input
+                  type="text"
+                  required
+                  value={newExpense.category}
+                  onChange={(e) => setNewExpense({ ...newExpense, category: e.target.value })}
+                  placeholder="e.g. Internet, Groceries"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Amount ({currency})</label>
+                <input
+                  type="number"
+                  required
+                  value={newExpense.amount}
+                  onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
+                  placeholder="0.00"
+                  className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-100"
+              >
+                Add Expense
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

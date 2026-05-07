@@ -1,4 +1,4 @@
-export type PaymentCategory = 'House' | 'Insurance' | 'Electricity' | 'Water' | 'Manfred' | 'Elrita';
+export type PaymentCategory = 'House' | 'Insurance' | 'Electricity' | 'Water' | 'Manfred' | 'Elrita' | string;
 
 export interface Payment {
   id: string;
@@ -28,7 +28,20 @@ export interface HomeTask {
   title: string;
   dueDate: string;
   completed: boolean;
-  category: 'Maintenance' | 'Reminder' | 'Other';
+  category: 'Maintenance' | 'Reminder' | 'Other' | string;
+}
+
+export interface ManualItem {
+  id: string;
+  label: string;
+  value: string;
+}
+
+export interface ManualSection {
+  id: string;
+  title: string;
+  iconName: string;
+  items: ManualItem[];
 }
 
 export interface DashboardStats {

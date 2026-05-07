@@ -6,19 +6,61 @@ import {
   RefreshCw,
   AlertCircle,
   History,
-  CheckCircle2
+  CheckCircle2,
+  ChevronLeft
 } from 'lucide-react';
-import { mockGasBottles, mockDogMeds } from '../services/data';
-import { format, differenceInDays } from 'date-fns';
+import { useAppContext } from '../context/useAppContext';
+import { format, differenceInDays, addDays } from 'date-fns';
 
 const Tracking: React.FC = () => {
-  const gasBottles = mockGasBottles;
-  const dogMeds = mockDogMeds;
+  const {
+    gasBottles, setGasBottles,
+    dogMeds, setDogMeds,
+    trackingFilter, setTrackingFilter
+  } = useAppContext();
+
+  const handleBottleReplace = (id: string) => {
+    setGasBottles(gasBottles.map(bottle => {
+      if (bottle.id === id) {
+        const today = new Date();
+        return {
+          ...bottle,
+          changeDate: format(today, 'yyyy-MM-dd'),
+          estimatedExpiryDate: format(addDays(today, 90), 'yyyy-MM-dd')
+        };
+      }
+      return bottle;
+    }));
+  };
+
+  const handleAdministerMed = (id: string) => {
+    setDogMeds(dogMeds.map(med => {
+      if (med.id === id) {
+        const today = new Date();
+        return {
+          ...med,
+          dateAdministered: format(today, 'yyyy-MM-dd'),
+          nextDueDate: format(addDays(today, 30), 'yyyy-MM-dd')
+        };
+      }
+      return med;
+    }));
+  };
 
   return (
     <div className="space-y-8">
+      {trackingFilter !== 'all' && (
+        <button
+          onClick={() => setTrackingFilter('all')}
+          className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-colors font-medium text-sm"
+        >
+          <ChevronLeft size={16} /> Back to all tracking
+        </button>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Gas Bottles Section */}
+        {(trackingFilter === 'all' || trackingFilter === 'gas') && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -75,7 +117,7 @@ const Tracking: React.FC = () => {
                   </div>
 
                   <button
-                    onClick={() => alert(`Mark Bottle ${bottle.bottleNumber} as Replaced clicked!`)}
+                    onClick={() => handleBottleReplace(bottle.id)}
                     className="w-full mt-6 flex items-center justify-center gap-2 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl transition-all text-sm font-semibold border border-slate-200 active:scale-95"
                   >
                     <RefreshCw size={16} />
@@ -86,8 +128,10 @@ const Tracking: React.FC = () => {
             })}
           </div>
         </div>
+        )}
 
         {/* Dog Medication Section */}
+        {(trackingFilter === 'all' || trackingFilter === 'meds') && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div>
@@ -138,7 +182,7 @@ const Tracking: React.FC = () => {
                   <h4 className="font-bold text-lg mb-1">Time for a new dose?</h4>
                   <p className="text-indigo-100 text-sm mb-4">Keeping our furry friend healthy is the top priority.</p>
                   <button
-                    onClick={() => alert('Dog Meds: Administered clicked!')}
+                    onClick={() => handleAdministerMed(dogMeds[0].id)}
                     className="w-full bg-white text-indigo-600 font-bold py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-transform"
                   >
                     <CheckCircle2 size={18} />
@@ -157,6 +201,7 @@ const Tracking: React.FC = () => {
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );

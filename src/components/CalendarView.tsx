@@ -15,12 +15,22 @@ import {
   isSameDay,
   isToday,
   addMonths,
-  subMonths
+  subMonths,
+  parseISO
 } from 'date-fns';
-import { mockPayments, mockTasks, mockDogMeds } from '../services/data';
+import { useAppContext } from '../context/useAppContext';
+import { X } from 'lucide-react';
 
 const CalendarView: React.FC = () => {
+  const { payments, tasks, dogMeds, addTask, addPayment } = useAppContext();
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    date: format(new Date(), 'yyyy-MM-dd'),
+    type: 'task',
+    amount: ''
+  });
 
   const days = eachDayOfInterval({
     start: startOfMonth(currentMonth),
@@ -28,15 +38,34 @@ const CalendarView: React.FC = () => {
   });
 
   const getEventsForDay = (day: Date) => {
-    const payments = mockPayments.filter(p => isSameDay(new Date(p.date), day));
-    const tasks = mockTasks.filter(t => isSameDay(new Date(t.dueDate), day));
-    const meds = mockDogMeds.filter(m => isSameDay(new Date(m.nextDueDate), day));
+    const dayPayments = payments.filter(p => isSameDay(parseISO(p.date), day));
+    const dayTasks = tasks.filter(t => isSameDay(parseISO(t.dueDate), day));
+    const dayMeds = dogMeds.filter(m => isSameDay(parseISO(m.nextDueDate), day));
 
     return [
-      ...payments.map(p => ({ type: 'payment', title: p.category, color: 'indigo', status: p.paid })),
-      ...tasks.map(t => ({ type: 'task', title: t.title, color: 'amber', status: t.completed })),
-      ...meds.map(() => ({ type: 'med', title: 'Dog Meds', color: 'emerald', status: false })),
+      ...dayPayments.map(p => ({ type: 'payment', title: p.category, color: 'indigo', status: p.paid })),
+      ...dayTasks.map(t => ({ type: 'task', title: t.title, color: 'amber', status: t.completed })),
+      ...dayMeds.map(() => ({ type: 'med', title: 'Dog Meds', color: 'emerald', status: false })),
     ];
+  };
+
+  const handleAddEvent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newEvent.type === 'task') {
+      addTask({
+        title: newEvent.title,
+        dueDate: newEvent.date,
+        category: 'Maintenance'
+      });
+    } else {
+      addPayment({
+        category: newEvent.title,
+        amount: parseFloat(newEvent.amount) || 0,
+        date: newEvent.date
+      });
+    }
+    setIsModalOpen(false);
+    setNewEvent({ title: '', date: format(new Date(), 'yyyy-MM-dd'), type: 'task', amount: '' });
   };
 
   return (
@@ -68,7 +97,7 @@ const CalendarView: React.FC = () => {
             </button>
           </div>
           <button
-            onClick={() => alert('Add Event clicked!')}
+            onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors active:scale-95 transition-transform"
           >
             <Plus size={18} />
@@ -126,6 +155,89 @@ const CalendarView: React.FC = () => {
           })}
         </div>
       </div>
+
+      {/* Add Event Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h3 className="font-bold text-slate-900 text-lg">Add New Event</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleAddEvent} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNewEvent({ ...newEvent, type: 'task' })}
+                    className={`py-2 rounded-xl text-sm font-bold border transition-all ${
+                      newEvent.type === 'task'
+                      ? 'bg-indigo-50 border-indigo-200 text-indigo-600'
+                      : 'border-slate-100 text-slate-500 hover:bg-slate-50'
+                    }`}
+                  >
+                    Task
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewEvent({ ...newEvent, type: 'payment' })}
+                    className={`py-2 rounded-xl text-sm font-bold border transition-all ${
+                      newEvent.type === 'payment'
+                      ? 'bg-indigo-50 border-indigo-200 text-indigo-600'
+                      : 'border-slate-100 text-slate-500 hover:bg-slate-50'
+                    }`}
+                  >
+                    Payment
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Title</label>
+                <input
+                  type="text"
+                  required
+                  value={newEvent.title}
+                  onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                  placeholder={newEvent.type === 'task' ? "e.g. Service Generator" : "e.g. Internet Bill"}
+                  className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+              {newEvent.type === 'payment' && (
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">Amount</label>
+                  <input
+                    type="number"
+                    required
+                    value={newEvent.amount}
+                    onChange={(e) => setNewEvent({ ...newEvent, amount: e.target.value })}
+                    placeholder="0.00"
+                    className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                  />
+                </div>
+              )}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1">Date</label>
+                <input
+                  type="date"
+                  required
+                  value={newEvent.date}
+                  onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+                  className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-100"
+              >
+                Add to Calendar
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Upcoming List (Alternative View) */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">

@@ -16,6 +16,7 @@ import {
   Info,
   Flame
 } from 'lucide-react';
+import { useAppContext } from '../context/useAppContext';
 
 const paymentData = [
   { name: 'Jan', amount: 4800 },
@@ -34,6 +35,8 @@ const categoryData = [
 ];
 
 const Analytics: React.FC = () => {
+  const { currency } = useAppContext();
+
   return (
     <div className="space-y-8">
       {/* Prediction Cards */}
@@ -76,14 +79,14 @@ const Analytics: React.FC = () => {
                 <div className="w-2 h-8 bg-indigo-500 rounded-full"></div>
                 <span className="font-semibold text-slate-700">June 2025</span>
               </div>
-              <span className="font-bold text-slate-900">$5,240</span>
+              <span className="font-bold text-slate-900">{currency}5,240</span>
             </div>
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-8 bg-indigo-300 rounded-full"></div>
                 <span className="font-semibold text-slate-700">July 2025</span>
               </div>
-              <span className="font-bold text-slate-900">$5,180</span>
+              <span className="font-bold text-slate-900">{currency}5,180</span>
             </div>
             <div className="text-xs text-slate-400 flex items-center gap-2 px-2">
               <Info size={14} />
@@ -174,7 +177,7 @@ const Analytics: React.FC = () => {
                   <div className="w-3 h-3 rounded-full" style={{backgroundColor: item.color}}></div>
                   <span className="text-sm font-medium text-slate-600">{item.name}</span>
                 </div>
-                <span className="text-sm font-bold text-slate-900">${item.value}</span>
+                <span className="text-sm font-bold text-slate-900">{currency}{item.value}</span>
               </div>
             ))}
           </div>
