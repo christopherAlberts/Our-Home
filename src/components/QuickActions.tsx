@@ -5,8 +5,10 @@ import {
   Plus,
   CreditCard
 } from 'lucide-react';
+import { useAppContext } from '../context/useAppContext';
 
 const QuickActions: React.FC<{ setActiveView: (view: string) => void }> = ({ setActiveView }) => {
+  const { setTrackingFilter } = useAppContext();
   const actions = [
     { label: 'Pay Utility', icon: CreditCard, color: 'bg-indigo-50 text-indigo-600', view: 'monthly' },
     { label: 'Refill Gas', icon: Flame, color: 'bg-orange-50 text-orange-600', view: 'tracking' },
@@ -14,12 +16,23 @@ const QuickActions: React.FC<{ setActiveView: (view: string) => void }> = ({ set
     { label: 'New Task', icon: Plus, color: 'bg-slate-50 text-slate-600', view: 'calendar' },
   ];
 
+  const handleAction = (label: string, view: string) => {
+    if (label === 'Refill Gas') {
+      setTrackingFilter('gas');
+    } else if (label === 'Dog Meds') {
+      setTrackingFilter('meds');
+    } else {
+      setTrackingFilter('all');
+    }
+    setActiveView(view);
+  };
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
       {actions.map((action) => (
         <button
           key={action.label}
-          onClick={() => setActiveView(action.view)}
+          onClick={() => handleAction(action.label, action.view)}
           className="flex flex-col items-center gap-3 p-4 bg-white rounded-2xl border border-slate-100 hover:border-indigo-200 hover:shadow-md transition-all active:scale-95 group"
         >
           <div className={`p-3 rounded-xl ${action.color} group-hover:scale-110 transition-transform`}>

@@ -7,11 +7,23 @@ import {
   Dog,
   ArrowRight,
   TrendingUp,
-  Clock
+  Clock,
+  Info,
+  X
 } from 'lucide-react';
 import QuickActions from './QuickActions';
+import { useAppContext } from '../context/useAppContext';
+import { useState } from 'react';
 
 const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setActiveView }) => {
+  const { payments, currency, setTrackingFilter } = useAppContext();
+  const [showSmartTips, setShowSmartTips] = useState(false);
+
+  const currentMonth = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const totalSpent = payments
+    .filter(p => p.paid && new Date(p.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) === currentMonth)
+    .reduce((sum, p) => sum + p.amount, 0);
+
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
@@ -53,13 +65,17 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
                   <p className="text-sm text-slate-500 mb-3">Bottle 1 is at approximately 15%. Consider ordering a refill soon.</p>
                   <div className="flex items-center gap-4">
                     <button
-                      onClick={(e) => { e.stopPropagation(); alert('Order Refill clicked!'); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setTrackingFilter('gas');
+                        setActiveView('tracking');
+                      }}
                       className="text-xs font-bold text-indigo-600 hover:underline active:scale-95 transition-transform"
                     >
                       Order Refill
                     </button>
                     <button
-                      onClick={(e) => { e.stopPropagation(); alert('Dismiss clicked!'); }}
+                      onClick={(e) => { e.stopPropagation(); alert('Alert dismissed!'); }}
                       className="text-xs font-bold text-slate-400 hover:underline active:scale-95 transition-transform"
                     >
                       Dismiss
@@ -117,7 +133,7 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-slate-500">Total Spent This Month</span>
-                  <span className="text-lg font-bold text-slate-900">$3,800</span>
+                  <span className="text-lg font-bold text-slate-900">{currency}{totalSpent.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-lg w-fit">
                   <TrendingUp size={12} /> 4.2% less than April
@@ -169,7 +185,7 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
               Based on historical data, your electricity usage peaks between 6PM and 9PM. Try shifting the pool pump to morning hours.
             </p>
             <button
-              onClick={() => alert('Smart Tips: Learn more clicked!')}
+              onClick={() => setShowSmartTips(true)}
               className="text-white text-xs font-bold flex items-center gap-1 relative z-10 hover:underline active:scale-95 transition-transform"
             >
               Learn more <ArrowRight size={12} />
@@ -178,6 +194,55 @@ const Dashboard: React.FC<{ setActiveView: (view: string) => void }> = ({ setAct
           </div>
         </div>
       </div>
+
+      {/* Smart Tips Modal */}
+      {showSmartTips && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-indigo-50/50">
+              <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2">
+                <Info className="text-indigo-600" size={24} />
+                Smart Home Tips
+              </h3>
+              <button onClick={() => setShowSmartTips(false)} className="text-slate-400 hover:text-slate-600">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-8 space-y-6">
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <div className="p-3 bg-amber-50 text-amber-600 rounded-2xl h-fit">
+                    <TrendingUp size={24} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-900 mb-1">Energy Optimization</h4>
+                    <p className="text-sm text-slate-500 leading-relaxed">
+                      Your electricity usage peaks between 6PM and 9PM. Shifting heavy appliance use (pool pump, dishwasher) to morning hours could save you up to 15% on your monthly bill.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl h-fit">
+                    <Flame size={24} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-900 mb-1">Gas Efficiency</h4>
+                    <p className="text-sm text-slate-500 leading-relaxed">
+                      Bottle 1 is lasting 10% longer than usual. This correlates with the warmer weather and less heater usage. Keep it up!
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowSmartTips(false)}
+                className="w-full py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-colors"
+              >
+                Got it, thanks!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

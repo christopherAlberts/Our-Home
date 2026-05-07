@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AppProvider } from './context/AppProvider';
 import Layout from './components/Layout';
 import Dashboard from './components/Dashboard';
 import MonthlyChecks from './components/MonthlyChecks';
@@ -36,9 +37,11 @@ function App() {
   };
 
   return (
-    <Layout activeView={activeView} setActiveView={setActiveView}>
-      {renderView()}
-    </Layout>
+    <AppProvider>
+      <Layout activeView={activeView} setActiveView={setActiveView}>
+        {renderView()}
+      </Layout>
+    </AppProvider>
   );
 }
 
